@@ -78,7 +78,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={sfData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+              margin={{ top: 20, right: 30, left: 60, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -115,7 +115,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
                   return [value, name];
                 }}
               />
-              <Legend verticalAlign="bottom" height={36} />
+              <Legend verticalAlign="bottom" height={48} />
               <Line
                 type="monotone"
                 dataKey="ownership_rate"
@@ -153,7 +153,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={austinData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+              margin={{ top: 20, right: 30, left: 60, bottom: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -190,7 +190,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
                   return [value, name];
                 }}
               />
-              <Legend verticalAlign="bottom" height={36} />
+              <Legend verticalAlign="bottom" height={48} />
               <Line
                 type="monotone"
                 dataKey="ownership_rate"
@@ -220,3 +220,4 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
 };
 
 export default OwnershipRentalRatesChart;
+
