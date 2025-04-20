@@ -44,13 +44,13 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
             top: 20,
             right: 30,
             left: 20,
-            bottom: 20,
+            bottom: 50, // Increased bottom margin to prevent legend overlapping
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="city" 
-            label={{ value: 'City', position: 'insideBottom', offset: -5 }} 
+            label={{ value: 'City', position: 'insideBottom', offset: -15 }} // Adjusted offset
           />
           <YAxis 
             label={{ value: 'Rate (%)', angle: -90, position: 'insideLeft' }}
@@ -58,7 +58,11 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
             width={80}
           />
           <Tooltip content={<ChartTooltipContent />} />
-          <Legend />
+          <Legend 
+            verticalAlign="bottom" 
+            height={36} // Reduced height to lower legend
+            wrapperStyle={{ paddingBottom: '10px' }} // Added padding at bottom
+          />
           <Bar dataKey="ownership_rate" name="Ownership Rate" fill="#8B5CF6" />
           <Bar dataKey="rental_rate" name="Rental Rate" fill="#F97316" />
         </BarChart>
