@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   LineChart,
@@ -13,48 +14,53 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { filterValidData } from "@/utils/dataProcessing";
 import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
 
-// Assign colors and dash styles for each city and rate type
-const CITY_COLORS = {
-  Austin: "#8B5CF6",
-  "San Francisco": "#F97316"
-};
-const RATE_TYPES = [
-  { key: "ownership_rate", label: "Ownership Rate", dash: "solid" },
-  { key: "rental_rate", label: "Rental Rate", dash: "5 5" }
-];
+const SF_COLOR = "#F97316";
 
 interface OwnershipRentalRatesChartProps {
   data: any[];
 }
 
+/**
+ * Shows only San Francisco, with two time series lines:
+ * - Ownership Rate (%)
+ * - Rental Rate (%)
+ * Ownership: solid line
+ * Rental: dashed line
+ * X axis: date (time series)
+ * Y axis: percent (0–100)
+ */
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
-  // Only keep data rows with all needed fields + valid date,
-  // and multiply rates by 100 for percentage visualization
+  // 1. Filter for SF only, valid ownership & rental rate, valid date
+  // 2. Multiply rates by 100 -> percentage
+  // 3. Sort by date asc
   const chartData = React.useMemo(() => {
-    // 1. Filter valid data by rates AND dates as originally
-    let filtered = filterValidData(data, ["ownership_rate", "rental_rate"]);
-    // 2. Map rates to percentages & ensure correct data type
-    let cleaned = filtered.map(item => ({
-      ...item,
-      ownership_rate: typeof item.ownership_rate === "number" ? item.ownership_rate * 100 : null,
-      rental_rate: typeof item.rental_rate === "number" ? item.rental_rate * 100 : null,
-    }));
-
-    // 3. Sort by date so the time series is properly ordered
-    cleaned.sort((a, b) => a.date.getTime() - b.date.getTime());
-    return cleaned;
+    const filtered = filterValidData(
+      data.filter(item => item.city === "San Francisco"),
+      ["ownership_rate", "rental_rate"]
+    );
+    return filtered
+      .map(item => ({
+        ...item,
+        ownership_rate: typeof item.ownership_rate === "number" ? item.ownership_rate * 100 : null,
+        rental_rate: typeof item.rental_rate === "number" ? item.rental_rate * 100 : null,
+      }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data]);
 
-  // Prepare legend payload for recharts (fixing the type error)
+  // Legend: Only for these two lines (SF)
   const legendPayload = [
-    ...Object.keys(CITY_COLORS).flatMap((city) =>
-      RATE_TYPES.map((type) => ({
-        value: `${city} - ${type.label}`,
-        color: CITY_COLORS[city as keyof typeof CITY_COLORS],
-        type: "line" as const,  // This is correct for recharts ^2.12+
-        strokeDasharray: type.dash
-      }))
-    )
+    {
+      value: "Ownership Rate",
+      color: SF_COLOR,
+      type: "line" as const,
+      strokeDasharray: "solid",
+    },
+    {
+      value: "Rental Rate",
+      color: SF_COLOR,
+      type: "line" as const,
+      strokeDasharray: "5 5",
+    }
   ];
 
   if (chartData.length === 0) {
@@ -68,10 +74,8 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
   return (
     <ChartContainer
       config={{
-        "Austin - Ownership": { color: CITY_COLORS["Austin"] },
-        "Austin - Rental": { color: CITY_COLORS["Austin"] },
-        "San Francisco - Ownership": { color: CITY_COLORS["San Francisco"] },
-        "San Francisco - Rental": { color: CITY_COLORS["San Francisco"] },
+        "San Francisco - Ownership": { color: SF_COLOR },
+        "San Francisco - Rental": { color: SF_COLOR },
       }}
       className="h-full"
     >
@@ -121,49 +125,23 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
             wrapperStyle={{ paddingTop: 18 }}
             payload={legendPayload}
           />
-          {/* Austin - Ownership Rate */}
+          {/* Ownership Rate (SF) */}
           <Line
             type="monotone"
             dataKey="ownership_rate"
-            data={chartData.filter((item) => item.city === "Austin")}
-            name="Austin - Ownership Rate"
-            stroke={CITY_COLORS["Austin"]}
+            name="Ownership Rate"
+            stroke={SF_COLOR}
             strokeDasharray="solid"
             dot={false}
             isAnimationActive={false}
             connectNulls={true}
           />
-          {/* Austin - Rental Rate */}
+          {/* Rental Rate (SF) */}
           <Line
             type="monotone"
             dataKey="rental_rate"
-            data={chartData.filter((item) => item.city === "Austin")}
-            name="Austin - Rental Rate"
-            stroke={CITY_COLORS["Austin"]}
-            strokeDasharray="5 5"
-            dot={false}
-            isAnimationActive={false}
-            connectNulls={true}
-          />
-          {/* SF - Ownership Rate */}
-          <Line
-            type="monotone"
-            dataKey="ownership_rate"
-            data={chartData.filter((item) => item.city === "San Francisco")}
-            name="San Francisco - Ownership Rate"
-            stroke={CITY_COLORS["San Francisco"]}
-            strokeDasharray="solid"
-            dot={false}
-            isAnimationActive={false}
-            connectNulls={true}
-          />
-          {/* SF - Rental Rate */}
-          <Line
-            type="monotone"
-            dataKey="rental_rate"
-            data={chartData.filter((item) => item.city === "San Francisco")}
-            name="San Francisco - Rental Rate"
-            stroke={CITY_COLORS["San Francisco"]}
+            name="Rental Rate"
+            stroke={SF_COLOR}
             strokeDasharray="5 5"
             dot={false}
             isAnimationActive={false}
