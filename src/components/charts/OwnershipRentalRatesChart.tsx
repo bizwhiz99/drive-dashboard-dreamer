@@ -53,6 +53,14 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
     const dates = chartData.map(d => d.date.getTime());
     return [Math.min(...dates), Math.max(...dates)] as [number, number];
   }, [chartData]);
+  
+  // Find the max value for ownership_rate and rental_rate to set Y axis
+  const maxOwnershipRate = Math.max(...chartData.map(d => d.ownership_rate || 0));
+  const maxRentalRate = Math.max(...chartData.map(d => d.rental_rate || 0));
+  
+  // Calculate Y domain with proper padding
+  const yDomainOwnership = [0, Math.ceil(maxOwnershipRate / 10) * 10 || 100];
+  const yDomainRental = [0, Math.ceil(maxRentalRate / 10) * 10 || 100];
 
   return (
     <div className="grid grid-cols-1 gap-8">
@@ -82,7 +90,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
               scale="time"
             />
             <YAxis
-              domain={[0, 100]}
+              domain={yDomainOwnership}
               label={{
                 value: "Ownership Rate (%)",
                 angle: -90,
@@ -91,6 +99,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
               }}
               width={80}
               tickFormatter={v => `${v}%`}
+              ticks={[0, 25, 50, 75, 100]}
             />
             <Tooltip
               content={<ChartTooltipContent />}
@@ -142,7 +151,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
               scale="time"
             />
             <YAxis
-              domain={[0, 100]}
+              domain={yDomainRental}
               label={{
                 value: "Rental Rate (%)",
                 angle: -90,
@@ -151,6 +160,7 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
               }}
               width={80}
               tickFormatter={v => `${v}%`}
+              ticks={[0, 25, 50, 75, 100]}
             />
             <Tooltip
               content={<ChartTooltipContent />}
