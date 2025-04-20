@@ -16,7 +16,6 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
   // Filter data to ensure all records have valid date, owned_units, and rental_units
   const validData = React.useMemo(() => {
     let filtered = filterValidData(data, ['owned_units', 'rental_units']);
-    // The filterValidData function now handles date validation and sorting
     
     if (selectedCity !== 'all') {
       filtered = filtered.filter(item => item.city === selectedCity);
@@ -53,14 +52,15 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
       <div className="flex-1">
         <ChartContainer 
           config={{
-            "owned_units": { color: "#8B5CF6" }, // Purple for owned units
-            "rental_units": { color: "#F97316" }, // Orange for rental units
+            "owned_units_Austin": { color: "#8B5CF6", label: "Owned Units (Austin)" },
+            "rental_units_Austin": { color: "#F97316", label: "Rental Units (Austin)" },
+            "owned_units_San Francisco": { color: "#0EA5E9", label: "Owned Units (San Francisco)" },
+            "rental_units_San Francisco": { color: "#10B981", label: "Rental Units (San Francisco)" },
           }}
           className="h-full"
         >
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={validData}
               margin={{
                 top: 10,
                 right: 30,
@@ -91,22 +91,53 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
               />
               <Legend />
-              <Area 
-                type="monotone" 
-                dataKey="rental_units" 
-                name="Rental Units" 
-                stackId="1" 
-                stroke="#F97316" 
-                fill="#F97316" 
-              />
-              <Area 
-                type="monotone" 
-                dataKey="owned_units" 
-                name="Owned Units" 
-                stackId="1" 
-                stroke="#8B5CF6" 
-                fill="#8B5CF6" 
-              />
+              
+              {/* For each city, create a separate area for owned units and rental units */}
+              {selectedCity === 'all' ? (
+                <>
+                  {cities.map(city => (
+                    <React.Fragment key={city}>
+                      <Area
+                        type="monotone"
+                        dataKey="owned_units"
+                        name={`Owned Units (${city})`}
+                        data={validData.filter(item => item.city === city)}
+                        stroke={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
+                        fill={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
+                        fillOpacity={0.5}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="rental_units"
+                        name={`Rental Units (${city})`}
+                        data={validData.filter(item => item.city === city)}
+                        stroke={city === 'Austin' ? "#F97316" : "#10B981"}
+                        fill={city === 'Austin' ? "#F97316" : "#10B981"}
+                        fillOpacity={0.5}
+                      />
+                    </React.Fragment>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <Area
+                    type="monotone"
+                    dataKey="owned_units"
+                    name="Owned Units"
+                    stroke="#8B5CF6"
+                    fill="#8B5CF6"
+                    fillOpacity={0.5}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="rental_units"
+                    name="Rental Units"
+                    stroke="#F97316"
+                    fill="#F97316"
+                    fillOpacity={0.5}
+                  />
+                </>
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </ChartContainer>
