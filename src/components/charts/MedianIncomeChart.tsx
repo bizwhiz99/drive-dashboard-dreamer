@@ -12,9 +12,8 @@ interface MedianIncomeChartProps {
 const MedianIncomeChart: React.FC<MedianIncomeChartProps> = ({ data }) => {
   // Filter data to ensure all records have valid date and median_income values
   const validData = React.useMemo(() => {
-    return filterValidData(data, ['median_income'])
-      .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()))
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    return filterValidData(data, ['median_income']);
+    // The filterValidData function now handles date validation and sorting
   }, [data]);
 
   // Get unique cities for the chart
@@ -57,6 +56,8 @@ const MedianIncomeChart: React.FC<MedianIncomeChartProps> = ({ data }) => {
             height={60}
             interval="preserveStartEnd"
             minTickGap={30}
+            type="category"
+            allowDuplicatedCategory={false}
           />
           <YAxis 
             width={80}
@@ -69,19 +70,25 @@ const MedianIncomeChart: React.FC<MedianIncomeChartProps> = ({ data }) => {
           />
           <Legend verticalAlign="top" />
           
-          {cities.map((city) => (
-            <Line
-              key={city}
-              type="monotone"
-              dataKey="median_income"
-              data={validData.filter(item => item.city === city)}
-              name={city}
-              stroke={cityColors[city] || "#8884d8"}
-              activeDot={{ r: 8 }}
-              dot={{ r: 2 }}
-              strokeWidth={2}
-            />
-          ))}
+          {cities.map((city) => {
+            // Get city data and ensure it's sorted
+            const cityData = validData
+              .filter(item => item.city === city);
+              
+            return (
+              <Line
+                key={city}
+                type="monotone"
+                dataKey="median_income"
+                data={cityData}
+                name={city}
+                stroke={cityColors[city] || "#8884d8"}
+                activeDot={{ r: 8 }}
+                dot={{ r: 2 }}
+                strokeWidth={2}
+              />
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </ChartContainer>

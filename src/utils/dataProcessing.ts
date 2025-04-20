@@ -32,26 +32,36 @@ export const processRawData = (data: any[]): any[] => {
  * Filter data to only include valid numerical values for the specified fields
  */
 export const filterValidData = (data: any[], fields: string[]): any[] => {
-  return data.filter(item => 
+  // First ensure all date objects are valid
+  const dataWithValidDates = data.filter(item => 
+    item.date instanceof Date && !isNaN(item.date.getTime())
+  );
+  
+  // Then filter for valid numeric fields
+  return dataWithValidDates.filter(item => 
     fields.every(field => 
       typeof item[field] === 'number' && !isNaN(item[field])
     )
-  );
+  ).sort((a, b) => a.date.getTime() - b.date.getTime()); // Sort by date chronologically
 };
 
 /**
  * Get the most recent data for each city
  */
 export const getMostRecentDataByCity = (data: any[]): any[] => {
+  // First ensure all items have valid dates
+  const dataWithValidDates = data.filter(item => 
+    item.date instanceof Date && !isNaN(item.date.getTime())
+  );
+  
   const cityMap = new Map<string, any>();
   
-  data.forEach(item => {
+  dataWithValidDates.forEach(item => {
     const city = item.city;
     const existingItem = cityMap.get(city);
     
     // If we don't have an entry for this city yet, or this entry is more recent
-    if (!existingItem || 
-        (new Date(item.date) > new Date(existingItem.date))) {
+    if (!existingItem || (item.date > existingItem.date)) {
       cityMap.set(city, item);
     }
   });

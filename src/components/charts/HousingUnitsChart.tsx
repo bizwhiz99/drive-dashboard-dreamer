@@ -15,14 +15,14 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
 
   // Filter data to ensure all records have valid date, owned_units, and rental_units
   const validData = React.useMemo(() => {
-    let filtered = filterValidData(data, ['owned_units', 'rental_units'])
-      .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()));
+    let filtered = filterValidData(data, ['owned_units', 'rental_units']);
+    // The filterValidData function now handles date validation and sorting
     
     if (selectedCity !== 'all') {
       filtered = filtered.filter(item => item.city === selectedCity);
     }
     
-    return filtered.sort((a, b) => a.date.getTime() - b.date.getTime());
+    return filtered;
   }, [data, selectedCity]);
 
   // Get unique cities for the chart
@@ -77,6 +77,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 height={60}
                 interval="preserveStartEnd"
                 minTickGap={30}
+                type="category"
+                allowDuplicatedCategory={false}
               />
               <YAxis 
                 tickFormatter={formatNumberWithK}

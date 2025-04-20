@@ -12,9 +12,8 @@ interface AirbnbActivityChartProps {
 const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
   // Filter data to ensure all records have valid date and airbnb_activity values
   const validData = React.useMemo(() => {
-    return filterValidData(data, ['airbnb_activity'])
-      .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()))
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    return filterValidData(data, ['airbnb_activity']);
+    // The filterValidData function now handles date validation and sorting
   }, [data]);
 
   // Get unique cities for the chart
@@ -41,7 +40,6 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={validData}
           margin={{
             top: 10,
             right: 30,
@@ -58,6 +56,8 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
             height={60}
             interval="preserveStartEnd"
             minTickGap={30}
+            type="category"
+            allowDuplicatedCategory={false}
           />
           <YAxis 
             width={80}
@@ -68,19 +68,25 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
           />
           <Legend verticalAlign="top" />
           
-          {cities.map((city) => (
-            <Line
-              key={city}
-              type="monotone"
-              dataKey="airbnb_activity"
-              data={validData.filter(item => item.city === city)}
-              name={city}
-              stroke={cityColors[city] || "#8884d8"}
-              activeDot={{ r: 8 }}
-              dot={{ r: 2 }}
-              strokeWidth={2}
-            />
-          ))}
+          {cities.map((city) => {
+            // Get city data and ensure it's sorted
+            const cityData = validData
+              .filter(item => item.city === city);
+              
+            return (
+              <Line
+                key={city}
+                type="monotone"
+                dataKey="airbnb_activity"
+                data={cityData}
+                name={city}
+                stroke={cityColors[city] || "#8884d8"}
+                activeDot={{ r: 8 }}
+                dot={{ r: 2 }}
+                strokeWidth={2}
+              />
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </ChartContainer>

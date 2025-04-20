@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,6 +29,14 @@ const Dashboard = () => {
       filtered = filtered.filter(item => item.city === selectedCity);
     }
     
+    // Ensure dates are properly sorted in filtered data
+    filtered.sort((a, b) => {
+      if (a.date instanceof Date && b.date instanceof Date) {
+        return a.date.getTime() - b.date.getTime();
+      }
+      return 0;
+    });
+    
     setFilteredData(filtered);
   }, [csvData, selectedCity]);
 
@@ -40,15 +47,39 @@ const Dashboard = () => {
   }, [csvData, selectedCity, applyFilters]);
 
   const handleDataLoaded = (data: any[]) => {
-    const processedData = processRawData(data);
-    
-    setCsvData(processedData);
-    setFilteredData(processedData);
-    setIsLoading(false);
-    toast("Data loaded successfully", {
-      description: `Loaded ${processedData.length} records from the CSV file.`,
-      duration: 3000,
-    });
+    try {
+      // Process the data and ensure all dates are properly converted to Date objects
+      const processedData = processRawData(data);
+      
+      // Verify dates are valid
+      const invalidDateCount = processedData.filter(
+        item => !(item.date instanceof Date) || isNaN(item.date.getTime())
+      ).length;
+      
+      if (invalidDateCount > 0) {
+        console.warn(`Found ${invalidDateCount} records with invalid dates`);
+      }
+      
+      // Sort data by date chronologically before setting state
+      const sortedData = [...processedData].sort(
+        (a, b) => a.date.getTime() - b.date.getTime()
+      );
+      
+      setCsvData(sortedData);
+      setFilteredData(sortedData);
+      setIsLoading(false);
+      toast("Data loaded successfully", {
+        description: `Loaded ${processedData.length} records from the CSV file.`,
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error processing data:", error);
+      toast.error("Error processing data", {
+        description: "Failed to process the loaded data. Check console for details.",
+        duration: 5000,
+      });
+      setIsLoading(false);
+    }
   };
 
   const handleError = (error: Error) => {

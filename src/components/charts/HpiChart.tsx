@@ -12,9 +12,8 @@ interface HpiChartProps {
 const HpiChart: React.FC<HpiChartProps> = ({ data }) => {
   // Filter data to ensure all records have valid date and hpi values
   const validData = React.useMemo(() => {
-    return filterValidData(data, ['hpi'])
-      .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()))
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    return filterValidData(data, ['hpi']);
+    // The filterValidData function now handles date validation and sorting
   }, [data]);
 
   // Get unique cities for the chart
@@ -57,6 +56,7 @@ const HpiChart: React.FC<HpiChartProps> = ({ data }) => {
             height={60}
             interval="preserveStartEnd"
             minTickGap={30}
+            type="category"
             allowDuplicatedCategory={false}
           />
           <YAxis 
@@ -69,19 +69,25 @@ const HpiChart: React.FC<HpiChartProps> = ({ data }) => {
           />
           <Legend verticalAlign="top" />
           
-          {cities.map((city) => (
-            <Line
-              key={city}
-              type="monotone"
-              dataKey="hpi"
-              data={validData.filter(item => item.city === city)}
-              name={city}
-              stroke={cityColors[city] || "#8884d8"}
-              activeDot={{ r: 8 }}
-              dot={{ r: 2 }}
-              strokeWidth={2}
-            />
-          ))}
+          {cities.map((city) => {
+            // Get city data and ensure it's sorted
+            const cityData = validData
+              .filter(item => item.city === city);
+              
+            return (
+              <Line
+                key={city}
+                type="monotone"
+                dataKey="hpi"
+                data={cityData}
+                name={city}
+                stroke={cityColors[city] || "#8884d8"}
+                activeDot={{ r: 8 }}
+                dot={{ r: 2 }}
+                strokeWidth={2}
+              />
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </ChartContainer>

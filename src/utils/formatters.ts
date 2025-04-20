@@ -1,4 +1,3 @@
-
 /**
  * Utility functions for formatting data in charts
  */
@@ -52,7 +51,8 @@ export const safeFormatDate = (value: any, formatFn: (date: Date) => string): st
     return formatFn(value);
   }
   
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+  // If it's a string date, convert to Date object
+  if (typeof value === 'string') {
     try {
       const date = new Date(value);
       if (!isNaN(date.getTime())) {
@@ -61,6 +61,11 @@ export const safeFormatDate = (value: any, formatFn: (date: Date) => string): st
     } catch (e) {
       console.error("Failed to parse date:", value);
     }
+  }
+  
+  // Add console logs for debugging date issues
+  if (value && typeof value !== 'string' && !(value instanceof Date)) {
+    console.log("Unexpected date format:", value, typeof value);
   }
   
   return String(value || '');
