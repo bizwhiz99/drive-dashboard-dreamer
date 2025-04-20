@@ -3,16 +3,16 @@ import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { filterValidData } from "@/utils/dataProcessing";
-import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
+import { formatDateMonthYear, safeFormatDate, formatNumberWithK } from "@/utils/formatters";
 
-interface AirbnbActivityChartProps {
+interface MedianIncomeChartProps {
   data: any[];
 }
 
-const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
-  // Filter data to ensure all records have valid date and airbnb_activity values
+const MedianIncomeChart: React.FC<MedianIncomeChartProps> = ({ data }) => {
+  // Filter data to ensure all records have valid date and median_income values
   const validData = React.useMemo(() => {
-    return filterValidData(data, ['airbnb_activity'])
+    return filterValidData(data, ['median_income'])
       .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data]);
@@ -41,7 +41,6 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={validData}
           margin={{
             top: 10,
             right: 30,
@@ -61,6 +60,8 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
           />
           <YAxis 
             width={80}
+            tickFormatter={formatNumberWithK}
+            domain={['auto', 'auto']}
           />
           <Tooltip 
             content={<ChartTooltipContent />}
@@ -72,7 +73,7 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
             <Line
               key={city}
               type="monotone"
-              dataKey="airbnb_activity"
+              dataKey="median_income"
               data={validData.filter(item => item.city === city)}
               name={city}
               stroke={cityColors[city] || "#8884d8"}
@@ -87,4 +88,4 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
   );
 };
 
-export default AirbnbActivityChart;
+export default MedianIncomeChart;

@@ -1,7 +1,8 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { getMostRecentDataByCity, filterValidData } from "@/utils/dataProcessing";
 
 interface OwnershipRateChartProps {
   data: any[];
@@ -9,32 +10,22 @@ interface OwnershipRateChartProps {
 
 const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
   // Get the most recent data for each city
-  const mostRecentData = React.useMemo(() => {
-    const cityMap = new Map<string, any>();
+  const chartData = React.useMemo(() => {
+    const validData = filterValidData(data, ['ownership_rate', 'rental_rate']);
+    const mostRecent = getMostRecentDataByCity(validData);
     
-    data.forEach(item => {
-      const city = item.city;
-      const existingItem = cityMap.get(city);
-      
-      // If we don't have an entry for this city yet, or this entry is more recent
-      if (!existingItem || 
-          (item.year > existingItem.year) || 
-          (item.year === existingItem.year && item.quarter > existingItem.quarter)) {
-        cityMap.set(city, item);
-      }
-    });
-    
-    // Transform for chart
-    return Array.from(cityMap.values()).map(item => ({
+    // Format for chart - convert rates to percentages
+    return mostRecent.map(item => ({
       city: item.city,
-      ownership_rate: parseFloat(item.ownership_rate) || 0,
-      rental_rate: parseFloat(item.rental_rate) || 0,
+      ownership_rate: item.ownership_rate * 100, // Convert to percentage
+      rental_rate: item.rental_rate * 100, // Convert to percentage
       year: item.year,
-      quarter: item.quarter
+      quarter: item.quarter,
+      date: item.date
     }));
   }, [data]);
   
-  if (data.length === 0) {
+  if (chartData.length === 0) {
     return <div className="flex items-center justify-center h-full text-muted-foreground">No data available</div>;
   }
 
@@ -48,7 +39,7 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={mostRecentData}
+          data={chartData}
           margin={{
             top: 20,
             right: 30,

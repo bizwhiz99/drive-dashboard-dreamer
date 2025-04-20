@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format } from 'date-fns';
+import { filterValidData } from "@/utils/dataProcessing";
+import { formatDateMonthYear, safeFormatDate, formatNumberWithK } from "@/utils/formatters";
 
 interface HousingUnitsChartProps {
   data: any[];
@@ -12,90 +13,22 @@ interface HousingUnitsChartProps {
 const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
   const [selectedCity, setSelectedCity] = useState<string>('all');
 
-  // Process data for the chart
-  const chartData = React.useMemo(() => {
-    // Filter by selected city first, if applicable
-    let filteredData = data;
+  // Filter data to ensure all records have valid date, owned_units, and rental_units
+  const validData = React.useMemo(() => {
+    let filtered = filterValidData(data, ['owned_units', 'rental_units'])
+      .filter(item => item.date instanceof Date && !isNaN(item.date.getTime()));
+    
     if (selectedCity !== 'all') {
-      filteredData = data.filter(item => item.city === selectedCity);
-    }
-
-    // Group by date
-    const groupedData = filteredData.reduce((acc: Record<string, any>, item) => {
-      const date = item.date;
-      if (!acc[date]) {
-        acc[date] = {
-          date: new Date(date), // Parse date string to Date object
-          dateString: date, // Keep original date string for fallback
-          owned_units: 0,
-          rental_units: 0
-        };
-      }
-      
-      // Sum up units by type - we'll average later if there's more than one city
-      acc[date].owned_units += parseFloat(item.owned_units) || 0;
-      acc[date].rental_units += parseFloat(item.rental_units) || 0;
-      
-      return acc;
-    }, {});
-    
-    // If we're showing all cities, we need to average the data
-    if (selectedCity === 'all') {
-      const uniqueCities = new Set(data.map(item => item.city)).size;
-      if (uniqueCities > 0) {
-        Object.keys(groupedData).forEach(date => {
-          groupedData[date].owned_units = Math.round(groupedData[date].owned_units / uniqueCities);
-          groupedData[date].rental_units = Math.round(groupedData[date].rental_units / uniqueCities);
-        });
-      }
+      filtered = filtered.filter(item => item.city === selectedCity);
     }
     
-    // Convert to array and sort chronologically
-    return Object.values(groupedData)
-      .sort((a: any, b: any) => {
-        // Ensure we have valid dates for comparison
-        const dateA = a.date instanceof Date && !isNaN(a.date.getTime()) ? a.date : new Date(0);
-        const dateB = b.date instanceof Date && !isNaN(b.date.getTime()) ? b.date : new Date(0);
-        return dateA - dateB;
-      });
+    return filtered.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data, selectedCity]);
 
+  // Get unique cities for the chart
   const cities = React.useMemo(() => {
     return Array.from(new Set(data.map(item => item.city)));
   }, [data]);
-
-  const formatYAxis = (value: number) => {
-    return `${(value / 1000).toLocaleString()}k`;
-  };
-
-  const formatXAxis = (value: any) => {
-    // Ensure we have a valid date
-    if (value instanceof Date && !isNaN(value.getTime())) {
-      return format(value, 'MMM yyyy');
-    }
-    return '';
-  };
-
-  // Safe formatter function for tooltip labels
-  const formatTooltipLabel = (label: any) => {
-    // Check if label is a valid Date object
-    if (label instanceof Date && !isNaN(label.getTime())) {
-      return format(label, 'MMMM yyyy');
-    }
-    // If it's a string that looks like a date, try to parse it
-    if (typeof label === 'string' && /\d{4}-\d{2}-\d{2}/.test(label)) {
-      try {
-        const date = new Date(label);
-        if (!isNaN(date.getTime())) {
-          return format(date, 'MMMM yyyy');
-        }
-      } catch (e) {
-        console.error("Failed to parse date:", label, e);
-      }
-    }
-    // Fallback: return the label as is
-    return String(label || '');
-  };
 
   if (data.length === 0) {
     return <div className="flex items-center justify-center h-full text-muted-foreground">No data available</div>;
@@ -127,7 +60,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
         >
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={chartData}
+              data={validData}
               margin={{
                 top: 10,
                 right: 30,
@@ -138,21 +71,22 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="date" 
-                tickFormatter={formatXAxis}
+                tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
                 angle={-45} 
                 textAnchor="end" 
                 height={60}
                 interval="preserveStartEnd"
+                minTickGap={30}
               />
               <YAxis 
-                tickFormatter={formatYAxis}
-                label={{ value: 'Housing Units (thousands)', angle: -90, position: 'insideLeft', offset: 10 }}
+                tickFormatter={formatNumberWithK}
+                domain={['auto', 'auto']}
+                label={{ value: 'Housing Units', angle: -90, position: 'insideLeft', offset: -30 }}
                 width={80}
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
-                labelFormatter={formatTooltipLabel}
-                formatter={(value: number) => [value.toLocaleString(), '']}
+                labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
               />
               <Legend />
               <Area 

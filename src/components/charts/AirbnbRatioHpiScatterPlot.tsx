@@ -1,38 +1,24 @@
 
-import React, { useState } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from 'react';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ZAxis } from 'recharts';
+import { ChartContainer } from "@/components/ui/chart";
+import { filterValidData } from "@/utils/dataProcessing";
+import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
 
-interface ScatterPlotProps {
+interface AirbnbRatioHpiScatterPlotProps {
   data: any[];
 }
 
-const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
-  const cities = React.useMemo(() => {
-    return Array.from(new Set(data.map(item => item.city)));
+const AirbnbRatioHpiScatterPlot: React.FC<AirbnbRatioHpiScatterPlotProps> = ({ data }) => {
+  // Filter data to ensure all records have valid airbnb_ratio and hpi values
+  const validData = React.useMemo(() => {
+    return filterValidData(data, ['airbnb_ratio', 'hpi']);
   }, [data]);
-  
-  // Transform data for the scatter plot
-  const scatterData = React.useMemo(() => {
-    return cities.map(city => {
-      const cityData = data
-        .filter(item => item.city === city)
-        .map(item => ({
-          x: parseFloat(item.airbnb_ratio) || 0,
-          y: parseFloat(item.hpi) || 0,
-          city: item.city,
-          year: item.year,
-          quarter: item.quarter,
-          time: `${item.year}-Q${item.quarter}`
-        }));
-        
-      return {
-        name: city,
-        data: cityData
-      };
-    });
-  }, [data, cities]);
+
+  // Get unique cities for the chart
+  const cities = React.useMemo(() => {
+    return Array.from(new Set(validData.map(item => item.city)));
+  }, [validData]);
 
   const cityColors: Record<string, string> = {
     "San Francisco": "#8B5CF6", // Vivid purple
@@ -46,16 +32,16 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
       return (
         <div className="bg-background border border-border rounded p-3 shadow-md">
           <div className="font-medium">{data.city}</div>
-          <div>{data.time}</div>
-          <div>Airbnb Ratio: {data.x.toFixed(4)}</div>
-          <div>Housing Price Index: {data.y.toFixed(2)}</div>
+          <div>{safeFormatDate(data.date, formatDateMonthYear)}</div>
+          <div>Airbnb Ratio: {data.airbnb_ratio.toFixed(4)}</div>
+          <div>Housing Price Index: {data.hpi.toFixed(2)}</div>
         </div>
       );
     }
     return null;
   };
 
-  if (data.length === 0) {
+  if (validData.length === 0) {
     return <div className="flex items-center justify-center h-full text-muted-foreground">No data available</div>;
   }
 
@@ -79,25 +65,26 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             type="number" 
-            dataKey="x" 
+            dataKey="airbnb_ratio" 
             name="Airbnb Ratio" 
             label={{ value: 'Airbnb Ratio (% of total housing)', position: 'bottom', offset: 0 }}
           />
           <YAxis 
             type="number" 
-            dataKey="y" 
+            dataKey="hpi" 
             name="Housing Price Index" 
             label={{ value: 'Housing Price Index (HPI)', angle: -90, position: 'insideLeft' }}
             width={80}
           />
+          <ZAxis range={[50, 400]} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          {scatterData.map((cityData, index) => (
+          {cities.map((city) => (
             <Scatter 
-              key={cityData.name} 
-              name={cityData.name} 
-              data={cityData.data} 
-              fill={cityColors[cityData.name] || "#8884d8"} 
+              key={city} 
+              name={city} 
+              data={validData.filter(item => item.city === city)} 
+              fill={cityColors[city] || "#8884d8"} 
             />
           ))}
         </ScatterChart>
@@ -106,4 +93,4 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
   );
 };
 
-export default ScatterPlot;
+export default AirbnbRatioHpiScatterPlot;
