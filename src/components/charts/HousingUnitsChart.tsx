@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { filterValidData } from "@/utils/dataProcessing";
 import { formatDateMonthYear, safeFormatDate, formatNumberWithK } from "@/utils/formatters";
@@ -35,9 +34,17 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="mb-4 w-48">
+      <div className="mb-4">
+        <Legend 
+          content={
+            <ChartLegendContent 
+              verticalAlign="top" 
+              className="justify-start" 
+            />
+          }
+        />
         <Select value={selectedCity} onValueChange={setSelectedCity}>
-          <SelectTrigger>
+          <SelectTrigger className="w-48">
             <SelectValue placeholder="All Cities" />
           </SelectTrigger>
           <SelectContent>
@@ -84,17 +91,16 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
               />
               <YAxis 
                 tickFormatter={formatNumberWithK}
-                domain={['auto', 'auto']}
+                domain={[0, 'auto']}
                 label={{ value: 'Housing Units', angle: -90, position: 'insideLeft', offset: -30 }}
                 width={80}
+                padding={{ top: 40, bottom: 20 }}
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
                 labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
               />
-              <Legend layout="horizontal" verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '10px' }} />
               
-              {/* Render appropriate data based on city selection */}
               {selectedCity === 'all' ? (
                 // Show data for all cities
                 <>

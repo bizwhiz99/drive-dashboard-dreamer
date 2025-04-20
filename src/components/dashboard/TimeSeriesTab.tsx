@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AirbnbActivityChart from "@/components/charts/AirbnbActivityChart";
@@ -14,7 +13,7 @@ interface TimeSeriesTabProps {
 
 const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -59,12 +58,12 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
         </Card>
       </div>
 
-      <Card className="mb-10">
-        <CardHeader>
+      <Card className="mb-16">
+        <CardHeader className="space-y-2">
           <CardTitle>Housing Units Over Time</CardTitle>
           <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
         </CardHeader>
-        <CardContent className="h-96">
+        <CardContent className="h-[500px]">
           <HousingUnitsChart data={data} />
         </CardContent>
       </Card>
