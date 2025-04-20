@@ -67,7 +67,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 50, // Increased bottom margin to prevent cutting off x-axis labels
+                bottom: 50, // Keep sufficient bottom margin for x-axis labels
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -87,7 +87,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 domain={[0, 'auto']}
                 label={{ value: 'Housing Units', angle: -90, position: 'insideLeft', offset: -30 }}
                 width={80}
-                padding={{ top: 20, bottom: 20 }} // Adjusted padding to center the chart vertically
+                padding={{ top: 20, bottom: 0 }} // Remove bottom padding to close gap at axis start
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
@@ -114,6 +114,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                         stroke={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
                         fill={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
                         fillOpacity={0.5}
+                        isAnimationActive={false}
+                        connectNulls={true}
                       />
                       <Area
                         type="monotone"
@@ -123,6 +125,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                         stroke={city === 'Austin' ? "#F97316" : "#10B981"}
                         fill={city === 'Austin' ? "#F97316" : "#10B981"}
                         fillOpacity={0.5}
+                        isAnimationActive={false}
+                        connectNulls={true}
                       />
                     </React.Fragment>
                   ))}
@@ -138,6 +142,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                     stroke="#8B5CF6"
                     fill="#8B5CF6"
                     fillOpacity={0.5}
+                    isAnimationActive={false}
+                    connectNulls={true}
                   />
                   <Area
                     type="monotone"
@@ -147,6 +153,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                     stroke="#F97316"
                     fill="#F97316"
                     fillOpacity={0.5}
+                    isAnimationActive={false}
+                    connectNulls={true}
                   />
                 </>
               )}
