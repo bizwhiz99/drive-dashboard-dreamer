@@ -67,7 +67,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 30,
+                bottom: 50, // Increased bottom margin to prevent cutting off x-axis labels
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -87,7 +87,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 domain={[0, 'auto']}
                 label={{ value: 'Housing Units', angle: -90, position: 'insideLeft', offset: -30 }}
                 width={80}
-                padding={{ top: 40, bottom: 20 }}
+                padding={{ top: 20, bottom: 20 }} // Adjusted padding to center the chart vertically
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
