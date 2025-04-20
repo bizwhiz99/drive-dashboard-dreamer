@@ -22,14 +22,14 @@ interface OwnershipRentalRatesChartProps {
 }
 
 /**
- * One chart for San Francisco:
- * - Ownership Rate (solid orange line)
- * - Rental Rate (dashed blue line)
+ * Two charts for San Francisco:
+ * - Ownership Rate Chart (orange line)
+ * - Rental Rate Chart (blue line)
  * Y axis: 0-100 (percentage). 
  * X axis: Time (date).
  */
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
-  // Only SF valid data - NO DIVISION by 100 now
+  // Only SF valid data
   const chartData = React.useMemo(() => {
     const filtered = filterValidData(
       data.filter(item => item.city === "San Francisco"),
@@ -55,76 +55,127 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
   }, [chartData]);
 
   return (
-    <ChartContainer
-      config={{
-        "Ownership Rate": { color: SF_COLOR_OWNERSHIP },
-        "Rental Rate": { color: SF_COLOR_RENTAL }
-      }}
-      className="h-96"
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="date"
-            tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
-            angle={-45}
-            textAnchor="end"
-            height={60}
-            interval="preserveStartEnd"
-            minTickGap={30}
-            type="number"
-            domain={dateDomain}
-            scale="time"
-          />
-          <YAxis
-            domain={[0, 100]}
-            label={{
-              value: "Rate (%)",
-              angle: -90,
-              position: "insideLeft",
-              offset: -40,
-            }}
-            width={80}
-            tickFormatter={v => `${v}%`}
-          />
-          <Tooltip
-            content={<ChartTooltipContent />}
-            labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
-            formatter={(value, name, props) =>
-              typeof value === "number"
-                ? `${value.toFixed(1)}%`
-                : value
-            }
-          />
-          <Legend verticalAlign="bottom" height={36} />
-          <Line
-            type="monotone"
-            dataKey="ownership_rate"
-            name="Ownership Rate"
-            stroke={SF_COLOR_OWNERSHIP}
-            dot={false}
-            isAnimationActive={false}
-            connectNulls={true}
-            strokeWidth={2}
-          />
-          <Line
-            type="monotone"
-            dataKey="rental_rate"
-            name="Rental Rate"
-            stroke={SF_COLOR_RENTAL}
-            strokeDasharray="8 4"
-            dot={false}
-            isAnimationActive={false}
-            connectNulls={true}
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <div className="grid grid-cols-1 gap-8">
+      {/* Ownership Rate Chart */}
+      <ChartContainer
+        config={{
+          "Ownership Rate": { color: SF_COLOR_OWNERSHIP },
+        }}
+        className="h-80"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
+              minTickGap={30}
+              type="number"
+              domain={dateDomain}
+              scale="time"
+            />
+            <YAxis
+              domain={[0, 100]}
+              label={{
+                value: "Ownership Rate (%)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -40,
+              }}
+              width={80}
+              tickFormatter={v => `${v}%`}
+            />
+            <Tooltip
+              content={<ChartTooltipContent />}
+              labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+              formatter={(value, name, props) =>
+                typeof value === "number"
+                  ? `${value.toFixed(1)}%`
+                  : value
+              }
+            />
+            <Legend verticalAlign="bottom" height={36} />
+            <Line
+              type="monotone"
+              dataKey="ownership_rate"
+              name="Ownership Rate"
+              stroke={SF_COLOR_OWNERSHIP}
+              dot={false}
+              isAnimationActive={false}
+              connectNulls={true}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+
+      {/* Rental Rate Chart */}
+      <ChartContainer
+        config={{
+          "Rental Rate": { color: SF_COLOR_RENTAL },
+        }}
+        className="h-80"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval="preserveStartEnd"
+              minTickGap={30}
+              type="number"
+              domain={dateDomain}
+              scale="time"
+            />
+            <YAxis
+              domain={[0, 100]}
+              label={{
+                value: "Rental Rate (%)",
+                angle: -90,
+                position: "insideLeft",
+                offset: -40,
+              }}
+              width={80}
+              tickFormatter={v => `${v}%`}
+            />
+            <Tooltip
+              content={<ChartTooltipContent />}
+              labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+              formatter={(value, name, props) =>
+                typeof value === "number"
+                  ? `${value.toFixed(1)}%`
+                  : value
+              }
+            />
+            <Legend verticalAlign="bottom" height={36} />
+            <Line
+              type="monotone"
+              dataKey="rental_rate"
+              name="Rental Rate"
+              stroke={SF_COLOR_RENTAL}
+              dot={false}
+              isAnimationActive={false}
+              connectNulls={true}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </div>
   );
 };
 
