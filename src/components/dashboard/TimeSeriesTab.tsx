@@ -59,25 +59,31 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
         </Card>
       </div>
 
-      <Card className="mb-24 space-y-4">
-        <CardHeader>
-          <CardTitle>Housing Units Over Time</CardTitle>
-          <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
-        </CardHeader>
-        <CardContent className="h-[700px] pb-28">
-          <HousingUnitsChart data={data} />
-        </CardContent>
-      </Card>
+      {/* Housing Units Chart - Added stronger bottom margin and explicit height */}
+      <div className="mb-32">
+        <Card className="mb-12">
+          <CardHeader>
+            <CardTitle>Housing Units Over Time</CardTitle>
+            <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[750px] pb-32">
+            <HousingUnitsChart data={data} />
+          </CardContent>
+        </Card>
+      </div>
       
-      <Card className="mb-16 space-y-4">
-        <CardHeader>
-          <CardTitle>Ownership &amp; Rental Rates Over Time</CardTitle>
-          <CardDescription>Ownership and rental rate trends by city</CardDescription>
-        </CardHeader>
-        <CardContent className="h-[600px] pb-16">
-          <OwnershipRentalRatesChart data={data} />
-        </CardContent>
-      </Card>
+      {/* Ownership & Rental Rates Chart - Added top margin to ensure separation */}
+      <div className="mt-16">
+        <Card className="mb-16 space-y-4">
+          <CardHeader>
+            <CardTitle>Ownership &amp; Rental Rates Over Time</CardTitle>
+            <CardDescription>Ownership and rental rate trends by city</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[600px] pb-16">
+            <OwnershipRentalRatesChart data={data} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -49,7 +49,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
         </Select>
       </div>
       
-      <div className="flex-1 overflow-visible pb-16">
+      {/* Added explicit min-height and stronger bottom padding */}
+      <div className="flex-1 overflow-visible pb-24 min-h-[500px]">
         <ChartContainer 
           config={{
             "owned_units": { color: "#8B5CF6", label: "Owned Units" },
@@ -67,7 +68,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 100, // Substantially increased bottom margin for published environment
+                bottom: 120, // Further increased bottom margin for published environment
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -76,12 +77,12 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
                 angle={-45} 
                 textAnchor="end" 
-                height={80} // Further increased height for x-axis
+                height={90} // Further increased height for x-axis
                 interval="preserveStartEnd"
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
-                dy={15} // Increased vertical offset to ensure labels are visible
+                dy={20} // Further increased vertical offset to ensure labels are visible
                 tick={{ fontSize: 12 }} // Explicitly set font size for better consistency
               />
               <YAxis 
