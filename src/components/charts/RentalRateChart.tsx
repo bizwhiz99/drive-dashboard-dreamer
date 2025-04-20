@@ -5,13 +5,13 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { filterValidData } from "@/utils/dataProcessing";
 import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
 
-interface OwnershipRateChartProps {
+interface RentalRateChartProps {
   data: any[];
 }
 
-const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
+const RentalRateChart: React.FC<RentalRateChartProps> = ({ data }) => {
   const chartData = React.useMemo(() => {
-    const validData = filterValidData(data, ['ownership_rate']);
+    const validData = filterValidData(data, ['rental_rate']);
     return validData;
   }, [data]);
 
@@ -48,7 +48,7 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
           />
           <YAxis
             domain={[0, 100]}
-            label={{ value: 'Ownership Rate (%)', angle: -90, position: 'insideLeft', offset: -40 }}
+            label={{ value: 'Rental Rate (%)', angle: -90, position: 'insideLeft', offset: -40 }}
             width={80}
           />
           <Tooltip 
@@ -58,7 +58,7 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
           <Legend verticalAlign="bottom" height={36} />
           <Line
             type="monotone"
-            dataKey="ownership_rate"
+            dataKey="rental_rate"
             data={chartData.filter(item => item.city === 'Austin')}
             name="Austin"
             stroke="#8B5CF6"
@@ -68,7 +68,7 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
           />
           <Line
             type="monotone"
-            dataKey="ownership_rate"
+            dataKey="rental_rate"
             data={chartData.filter(item => item.city === 'San Francisco')}
             name="San Francisco"
             stroke="#F97316"
@@ -82,4 +82,4 @@ const OwnershipRateChart: React.FC<OwnershipRateChartProps> = ({ data }) => {
   );
 };
 
-export default OwnershipRateChart;
+export default RentalRateChart;
