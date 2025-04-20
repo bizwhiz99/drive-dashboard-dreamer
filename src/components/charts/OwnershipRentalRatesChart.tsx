@@ -1,6 +1,14 @@
-
 import React from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { filterValidData } from "@/utils/dataProcessing";
 import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
@@ -20,23 +28,30 @@ interface OwnershipRentalRatesChartProps {
 }
 
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
-  // Only keep data rows with all needed fields + valid date
-  const chartData = React.useMemo(
-    () =>
-      filterValidData(
-        data,
-        ["ownership_rate", "rental_rate"]
-      ),
-    [data]
-  );
+  // Only keep data rows with all needed fields + valid date,
+  // and multiply rates by 100 for percentage visualization
+  const chartData = React.useMemo(() => {
+    // 1. Filter valid data by rates AND dates as originally
+    let filtered = filterValidData(data, ["ownership_rate", "rental_rate"]);
+    // 2. Map rates to percentages & ensure correct data type
+    let cleaned = filtered.map(item => ({
+      ...item,
+      ownership_rate: typeof item.ownership_rate === "number" ? item.ownership_rate * 100 : null,
+      rental_rate: typeof item.rental_rate === "number" ? item.rental_rate * 100 : null,
+    }));
 
-  // Fixed: Use proper LegendType 'line' instead of string 'line'
+    // 3. Sort by date so the time series is properly ordered
+    cleaned.sort((a, b) => a.date.getTime() - b.date.getTime());
+    return cleaned;
+  }, [data]);
+
+  // Prepare legend payload for recharts (fixing the type error)
   const legendPayload = [
     ...Object.keys(CITY_COLORS).flatMap((city) =>
       RATE_TYPES.map((type) => ({
         value: `${city} - ${type.label}`,
         color: CITY_COLORS[city as keyof typeof CITY_COLORS],
-        type: "line" as const, // Use 'as const' to ensure it's properly typed
+        type: "line" as const,  // This is correct for recharts ^2.12+
         strokeDasharray: type.dash
       }))
     )
@@ -79,6 +94,9 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
             height={60}
             interval="preserveStartEnd"
             minTickGap={30}
+            type="number"
+            domain={["auto", "auto"]}
+            scale="time"
           />
           <YAxis
             domain={[0, 100]}
@@ -93,6 +111,9 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
           <Tooltip
             content={<ChartTooltipContent />}
             labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+            formatter={(value) =>
+              typeof value === "number" ? `${value.toFixed(1)}%` : value
+            }
           />
           <Legend
             verticalAlign="bottom"
