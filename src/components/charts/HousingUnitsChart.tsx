@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -34,7 +33,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       <div className="mb-4 flex items-center justify-between">
         <Select value={selectedCity} onValueChange={setSelectedCity}>
           <SelectTrigger className="w-48">
@@ -49,7 +48,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
         </Select>
       </div>
       
-      <div className="flex-1">
+      <div className="flex-1 overflow-visible">
         <ChartContainer 
           config={{
             "owned_units": { color: "#8B5CF6", label: "Owned Units" },
@@ -67,7 +66,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 50, // Keep sufficient bottom margin for x-axis labels
+                bottom: 70, // Increased bottom margin to avoid axis label overlap
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -87,7 +86,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 domain={[0, 'auto']}
                 label={{ value: 'Housing Units', angle: -90, position: 'insideLeft', offset: -30 }}
                 width={80}
-                padding={{ top: 20, bottom: 0 }} // Remove bottom padding to close gap at axis start
+                padding={{ top: 20, bottom: 0 }}
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
