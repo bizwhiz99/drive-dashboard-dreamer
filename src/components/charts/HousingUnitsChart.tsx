@@ -52,6 +52,8 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
       <div className="flex-1">
         <ChartContainer 
           config={{
+            "owned_units": { color: "#8B5CF6", label: "Owned Units" },
+            "rental_units": { color: "#F97316", label: "Rental Units" },
             "owned_units_Austin": { color: "#8B5CF6", label: "Owned Units (Austin)" },
             "rental_units_Austin": { color: "#F97316", label: "Rental Units (Austin)" },
             "owned_units_San Francisco": { color: "#0EA5E9", label: "Owned Units (San Francisco)" },
@@ -90,10 +92,11 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 content={<ChartTooltipContent />}
                 labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
               />
-              <Legend />
+              <Legend layout="horizontal" verticalAlign="top" align="center" wrapperStyle={{ paddingBottom: '10px' }} />
               
-              {/* For each city, create a separate area for owned units and rental units */}
+              {/* Render appropriate data based on city selection */}
               {selectedCity === 'all' ? (
+                // Show data for all cities
                 <>
                   {cities.map(city => (
                     <React.Fragment key={city}>
@@ -119,11 +122,13 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                   ))}
                 </>
               ) : (
+                // Show data only for the selected city
                 <>
                   <Area
                     type="monotone"
                     dataKey="owned_units"
                     name="Owned Units"
+                    data={validData}
                     stroke="#8B5CF6"
                     fill="#8B5CF6"
                     fillOpacity={0.5}
@@ -132,6 +137,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                     type="monotone"
                     dataKey="rental_units"
                     name="Rental Units"
+                    data={validData}
                     stroke="#F97316"
                     fill="#F97316"
                     fillOpacity={0.5}

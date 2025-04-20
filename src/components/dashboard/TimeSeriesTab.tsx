@@ -14,7 +14,7 @@ interface TimeSeriesTabProps {
 
 const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -59,7 +59,7 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
         </Card>
       </div>
 
-      <Card className="mb-6">
+      <Card className="mb-10">
         <CardHeader>
           <CardTitle>Housing Units Over Time</CardTitle>
           <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
