@@ -56,10 +56,10 @@ const AirbnbRatioHpiScatterPlot: React.FC<AirbnbRatioHpiScatterPlotProps> = ({ d
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart
           margin={{
-            top: 20,
+            top: 30,
             right: 30,
             left: 20,
-            bottom: 20,
+            bottom: 30,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -67,18 +67,28 @@ const AirbnbRatioHpiScatterPlot: React.FC<AirbnbRatioHpiScatterPlotProps> = ({ d
             type="number" 
             dataKey="airbnb_ratio" 
             name="Airbnb Ratio" 
-            label={{ value: 'Airbnb Ratio (% of total housing)', position: 'bottom', offset: 0 }}
+            label={{ value: 'Airbnb Ratio (% of total housing)', position: 'bottom', offset: 10 }}
           />
           <YAxis 
             type="number" 
             dataKey="hpi" 
             name="Housing Price Index" 
-            label={{ value: 'Housing Price Index (HPI)', angle: -90, position: 'insideLeft' }}
+            label={{ value: 'Housing Price Index (HPI)', angle: -90, position: 'insideLeft', offset: -5 }}
             width={80}
           />
           <ZAxis range={[50, 400]} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
+          <Legend 
+            align="right" 
+            verticalAlign="top" 
+            layout="vertical"
+            wrapperStyle={{
+              paddingLeft: 30,
+              paddingTop: 0,
+              right: 10,
+              top: 0,
+            }}
+          />
           {cities.map((city) => (
             <Scatter 
               key={city} 
