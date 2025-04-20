@@ -53,10 +53,10 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
   }
 
   // Calculate domain for x-axis from data dates for better scale accuracy
-  const dateDomain: [number, number] = React.useMemo(() => {
-    if (chartData.length === 0) return ["auto", "auto"];
+  const dateDomain = React.useMemo(() => {
+    if (chartData.length === 0) return [0, 1] as [number, number]; // Provide default numeric values
     const dates = chartData.map(d => d.date.getTime());
-    return [Math.min(...dates), Math.max(...dates)];
+    return [Math.min(...dates), Math.max(...dates)] as [number, number];
   }, [chartData]);
 
   return (
@@ -167,4 +167,3 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
 };
 
 export default OwnershipRentalRatesChart;
-
