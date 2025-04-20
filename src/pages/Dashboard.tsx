@@ -66,6 +66,7 @@ const Dashboard = () => {
     // Process the data to ensure proper types for numerical values
     const processedData = data.map(item => ({
       ...item,
+      date: new Date(item.date), // Parse date string to Date object
       year: parseInt(item.year),
       quarter: parseInt(item.quarter),
       airbnb_activity: parseFloat(item.airbnb_activity),
