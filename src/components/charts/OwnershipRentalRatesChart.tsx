@@ -1,3 +1,4 @@
+
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -29,12 +30,13 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
     [data]
   );
 
+  // Fixed: Use proper LegendType 'line' instead of string 'line'
   const legendPayload = [
     ...Object.keys(CITY_COLORS).flatMap((city) =>
       RATE_TYPES.map((type) => ({
         value: `${city} - ${type.label}`,
         color: CITY_COLORS[city as keyof typeof CITY_COLORS],
-        type: "line",
+        type: "line" as const, // Use 'as const' to ensure it's properly typed
         strokeDasharray: type.dash
       }))
     )
