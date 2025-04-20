@@ -84,8 +84,7 @@ const Dashboard = () => {
     setCsvData(processedData);
     setFilteredData(processedData);
     setIsLoading(false);
-    toast({
-      title: "Data loaded successfully",
+    toast("Data loaded successfully", {
       description: `Loaded ${processedData.length} records from the CSV file.`,
       duration: 3000,
     });
@@ -93,8 +92,7 @@ const Dashboard = () => {
 
   const handleError = (error: Error) => {
     setIsLoading(false);
-    toast({
-      title: "Error loading data",
+    toast("Error loading data", {
       description: error.message,
       duration: 5000,
       variant: "destructive",
@@ -110,8 +108,7 @@ const Dashboard = () => {
     setSelectedCity('all');
     setSelectedYear('all');
     setSelectedQuarter('all');
-    toast({
-      title: "Filters reset",
+    toast("Filters reset", {
       description: "Displaying all available data.",
       duration: 2000,
     });
