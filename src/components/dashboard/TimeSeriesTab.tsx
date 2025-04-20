@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AirbnbActivityChart from "@/components/charts/AirbnbActivityChart";
@@ -6,7 +5,7 @@ import HpiChart from "@/components/charts/HpiChart";
 import MedianRentChart from "@/components/charts/MedianRentChart";
 import MedianIncomeChart from "@/components/charts/MedianIncomeChart";
 import HousingUnitsChart from "@/components/charts/HousingUnitsChart";
-import OwnershipRateChart from "@/components/charts/OwnershipRateChart";
+import OwnershipRentalRatesChart from "@/components/charts/OwnershipRentalRatesChart";
 
 interface TimeSeriesTabProps {
   data: any[];
@@ -68,18 +67,16 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
           <HousingUnitsChart data={data} />
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader>
-          <CardTitle>Ownership vs Rental Rate by City</CardTitle>
-          <CardDescription>Most recent ownership and rental rates</CardDescription>
+          <CardTitle>Ownership &amp; Rental Rates Over Time</CardTitle>
+          <CardDescription>Ownership and rental rate trends for each city (lines: solid = ownership, dashed = rental)</CardDescription>
         </CardHeader>
         <CardContent className="h-80">
-          <OwnershipRateChart data={data} />
+          <OwnershipRentalRatesChart data={data} />
         </CardContent>
       </Card>
     </div>
   );
 };
-
 export default TimeSeriesTab;
