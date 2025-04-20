@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -35,14 +36,6 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
   return (
     <div className="h-full flex flex-col">
       <div className="mb-4">
-        <Legend 
-          content={
-            <ChartLegendContent 
-              verticalAlign="top" 
-              className="justify-start" 
-            />
-          }
-        />
         <Select value={selectedCity} onValueChange={setSelectedCity}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="All Cities" />
@@ -99,6 +92,11 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
               <Tooltip 
                 content={<ChartTooltipContent />}
                 labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+              />
+              <Legend 
+                content={<ChartLegendContent verticalAlign="top" className="justify-start" />}
+                layout="horizontal"
+                verticalAlign="top"
               />
               
               {selectedCity === 'all' ? (
