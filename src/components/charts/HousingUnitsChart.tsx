@@ -26,6 +26,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
       if (!acc[date]) {
         acc[date] = {
           date: new Date(date), // Parse date string to Date object
+          dateString: date, // Keep original date string for fallback
           owned_units: 0,
           rental_units: 0
         };
@@ -51,7 +52,12 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
     
     // Convert to array and sort chronologically
     return Object.values(groupedData)
-      .sort((a: any, b: any) => a.date - b.date);
+      .sort((a: any, b: any) => {
+        // Ensure we have valid dates for comparison
+        const dateA = a.date instanceof Date && !isNaN(a.date.getTime()) ? a.date : new Date(0);
+        const dateB = b.date instanceof Date && !isNaN(b.date.getTime()) ? b.date : new Date(0);
+        return dateA - dateB;
+      });
   }, [data, selectedCity]);
 
   const cities = React.useMemo(() => {
@@ -62,8 +68,33 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
     return `${(value / 1000).toLocaleString()}k`;
   };
 
-  const formatXAxis = (date: Date) => {
-    return format(new Date(date), 'MMM yyyy');
+  const formatXAxis = (value: any) => {
+    // Ensure we have a valid date
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return format(value, 'MMM yyyy');
+    }
+    return '';
+  };
+
+  // Safe formatter function for tooltip labels
+  const formatTooltipLabel = (label: any) => {
+    // Check if label is a valid Date object
+    if (label instanceof Date && !isNaN(label.getTime())) {
+      return format(label, 'MMMM yyyy');
+    }
+    // If it's a string that looks like a date, try to parse it
+    if (typeof label === 'string' && /\d{4}-\d{2}-\d{2}/.test(label)) {
+      try {
+        const date = new Date(label);
+        if (!isNaN(date.getTime())) {
+          return format(date, 'MMMM yyyy');
+        }
+      } catch (e) {
+        console.error("Failed to parse date:", label, e);
+      }
+    }
+    // Fallback: return the label as is
+    return String(label || '');
   };
 
   if (data.length === 0) {
@@ -120,7 +151,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
               />
               <Tooltip 
                 content={<ChartTooltipContent />}
-                labelFormatter={(label) => format(new Date(label), 'MMMM yyyy')}
+                labelFormatter={formatTooltipLabel}
                 formatter={(value: number) => [value.toLocaleString(), '']}
               />
               <Legend />

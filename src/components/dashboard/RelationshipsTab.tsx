@@ -8,6 +8,16 @@ interface RelationshipsTabProps {
 }
 
 const RelationshipsTab: React.FC<RelationshipsTabProps> = ({ data }) => {
+  // Ensure we have valid data before passing to ScatterPlot
+  const validData = React.useMemo(() => {
+    return data.filter(item => 
+      typeof item.airbnb_ratio === 'number' && 
+      !isNaN(item.airbnb_ratio) && 
+      typeof item.hpi === 'number' && 
+      !isNaN(item.hpi)
+    );
+  }, [data]);
+
   return (
     <Card>
       <CardHeader>
@@ -15,7 +25,7 @@ const RelationshipsTab: React.FC<RelationshipsTabProps> = ({ data }) => {
         <CardDescription>Relationship between Airbnb's share of housing and price indices</CardDescription>
       </CardHeader>
       <CardContent className="h-96">
-        <ScatterPlot data={data} />
+        <ScatterPlot data={validData} />
       </CardContent>
     </Card>
   );
