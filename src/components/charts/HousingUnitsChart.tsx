@@ -35,7 +35,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <Select value={selectedCity} onValueChange={setSelectedCity}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="All Cities" />
@@ -64,7 +64,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               margin={{
-                top: 10,
+                top: 20,
                 right: 30,
                 left: 60,
                 bottom: 30,
@@ -94,9 +94,11 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
               />
               <Legend 
-                content={<ChartLegendContent verticalAlign="top" className="justify-start" />}
+                content={<ChartLegendContent />}
                 layout="horizontal"
                 verticalAlign="top"
+                align="left"
+                wrapperStyle={{ paddingBottom: '10px' }}
               />
               
               {selectedCity === 'all' ? (

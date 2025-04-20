@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AirbnbActivityChart from "@/components/charts/AirbnbActivityChart";
@@ -58,12 +59,12 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
         </Card>
       </div>
 
-      <Card className="mb-16">
-        <CardHeader className="space-y-2">
+      <Card className="mb-16 space-y-4">
+        <CardHeader>
           <CardTitle>Housing Units Over Time</CardTitle>
           <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
         </CardHeader>
-        <CardContent className="h-[500px]">
+        <CardContent className="h-[600px] pb-8">
           <HousingUnitsChart data={data} />
         </CardContent>
       </Card>
