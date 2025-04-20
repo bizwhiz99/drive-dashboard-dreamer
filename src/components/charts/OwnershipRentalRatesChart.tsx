@@ -14,177 +14,207 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { filterValidData } from "@/utils/dataProcessing";
 import { formatDateMonthYear, safeFormatDate } from "@/utils/formatters";
 
+// Colors for different cities and data types
 const SF_COLOR_OWNERSHIP = "#F97316"; // orange
 const SF_COLOR_RENTAL = "#3B82F6"; // blue
+const AUSTIN_COLOR_OWNERSHIP = "#22C55E"; // green
+const AUSTIN_COLOR_RENTAL = "#8B5CF6"; // purple
 
 interface OwnershipRentalRatesChartProps {
   data: any[];
 }
 
 /**
- * Two charts for San Francisco:
- * - Ownership Rate Chart (orange line)
- * - Rental Rate Chart (blue line)
- * Y axis: 0-100 (percentage). 
- * X axis: Time (date).
+ * Ownership & Rental Rates chart for San Francisco and Austin
+ * - One chart per city
+ * - Two lines per chart: ownership rate and rental rate
+ * Y axis: 0-1 (decimal percentage)
+ * X axis: Time (date)
  */
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
-  // Only SF valid data
-  const chartData = React.useMemo(() => {
-    const filtered = filterValidData(
+  // Prepare chart data - filter for valid data for both cities
+  const sfData = React.useMemo(() => {
+    return filterValidData(
       data.filter(item => item.city === "San Francisco"),
       ["ownership_rate", "rental_rate"]
-    );
-    return filtered
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    ).sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data]);
 
-  if (chartData.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-full text-muted-foreground">
-        No data available
-      </div>
-    );
-  }
+  const austinData = React.useMemo(() => {
+    return filterValidData(
+      data.filter(item => item.city === "Austin"),
+      ["ownership_rate", "rental_rate"]
+    ).sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [data]);
 
-  // Calculate domain for x-axis from data dates
-  const dateDomain = React.useMemo(() => {
-    if (chartData.length === 0) return [0, 1] as [number, number];
-    const dates = chartData.map(d => d.date.getTime());
+  // Calculate date domains for x-axis
+  const dateDomainSF = React.useMemo(() => {
+    if (sfData.length === 0) return [0, 1] as [number, number];
+    const dates = sfData.map(d => d.date.getTime());
     return [Math.min(...dates), Math.max(...dates)] as [number, number];
-  }, [chartData]);
-  
-  // Find the max value for ownership_rate and rental_rate to set Y axis
-  const maxOwnershipRate = Math.max(...chartData.map(d => d.ownership_rate || 0));
-  const maxRentalRate = Math.max(...chartData.map(d => d.rental_rate || 0));
-  
-  // Calculate Y domain with proper padding
-  const yDomainOwnership = [0, Math.ceil(maxOwnershipRate / 10) * 10 || 100];
-  const yDomainRental = [0, Math.ceil(maxRentalRate / 10) * 10 || 100];
+  }, [sfData]);
 
+  const dateDomainAustin = React.useMemo(() => {
+    if (austinData.length === 0) return [0, 1] as [number, number];
+    const dates = austinData.map(d => d.date.getTime());
+    return [Math.min(...dates), Math.max(...dates)] as [number, number];
+  }, [austinData]);
+
+  // Both cities have data?
+  const hasBothCities = sfData.length > 0 && austinData.length > 0;
+
+  // Render charts - one for San Francisco and one for Austin if data is available
   return (
     <div className="grid grid-cols-1 gap-8">
-      {/* Ownership Rate Chart */}
-      <ChartContainer
-        config={{
-          "Ownership Rate": { color: SF_COLOR_OWNERSHIP },
-        }}
-        className="h-80"
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
-              angle={-45}
-              textAnchor="end"
-              height={60}
-              interval="preserveStartEnd"
-              minTickGap={30}
-              type="number"
-              domain={dateDomain}
-              scale="time"
-            />
-            <YAxis
-              domain={yDomainOwnership}
-              label={{
-                value: "Ownership Rate (%)",
-                angle: -90,
-                position: "insideLeft",
-                offset: -40,
-              }}
-              width={80}
-              tickFormatter={v => `${v}%`}
-              ticks={[0, 25, 50, 75, 100]}
-            />
-            <Tooltip
-              content={<ChartTooltipContent />}
-              labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
-              formatter={(value, name, props) =>
-                typeof value === "number"
-                  ? `${value.toFixed(1)}%`
-                  : value
-              }
-            />
-            <Legend verticalAlign="bottom" height={36} />
-            <Line
-              type="monotone"
-              dataKey="ownership_rate"
-              name="Ownership Rate"
-              stroke={SF_COLOR_OWNERSHIP}
-              dot={false}
-              isAnimationActive={false}
-              connectNulls={true}
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </ChartContainer>
+      {/* San Francisco Chart */}
+      {sfData.length > 0 && (
+        <ChartContainer
+          config={{
+            "Ownership Rate (SF)": { color: SF_COLOR_OWNERSHIP },
+            "Rental Rate (SF)": { color: SF_COLOR_RENTAL },
+          }}
+          className={hasBothCities ? "h-80" : "h-[600px]"}
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={sfData}
+              margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+                interval="preserveStartEnd"
+                minTickGap={30}
+                type="number"
+                domain={dateDomainSF}
+                scale="time"
+              />
+              <YAxis
+                domain={[0, 1]}
+                label={{
+                  value: "Rate (%)",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: -40,
+                }}
+                width={80}
+                tickFormatter={v => `${Math.round(v * 100)}%`}
+                ticks={[0, 0.25, 0.5, 0.75, 1]}
+              />
+              <Tooltip
+                content={<ChartTooltipContent />}
+                labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+                formatter={(value, name) => {
+                  if (typeof value === "number") {
+                    return [`${(value * 100).toFixed(1)}%`, name];
+                  }
+                  return [value, name];
+                }}
+              />
+              <Legend verticalAlign="bottom" height={36} />
+              <Line
+                type="monotone"
+                dataKey="ownership_rate"
+                name="Ownership Rate (SF)"
+                stroke={SF_COLOR_OWNERSHIP}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls={true}
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="rental_rate"
+                name="Rental Rate (SF)"
+                stroke={SF_COLOR_RENTAL}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls={true}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      )}
 
-      {/* Rental Rate Chart */}
-      <ChartContainer
-        config={{
-          "Rental Rate": { color: SF_COLOR_RENTAL },
-        }}
-        className="h-80"
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
-              angle={-45}
-              textAnchor="end"
-              height={60}
-              interval="preserveStartEnd"
-              minTickGap={30}
-              type="number"
-              domain={dateDomain}
-              scale="time"
-            />
-            <YAxis
-              domain={yDomainRental}
-              label={{
-                value: "Rental Rate (%)",
-                angle: -90,
-                position: "insideLeft",
-                offset: -40,
-              }}
-              width={80}
-              tickFormatter={v => `${v}%`}
-              ticks={[0, 25, 50, 75, 100]}
-            />
-            <Tooltip
-              content={<ChartTooltipContent />}
-              labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
-              formatter={(value, name, props) =>
-                typeof value === "number"
-                  ? `${value.toFixed(1)}%`
-                  : value
-              }
-            />
-            <Legend verticalAlign="bottom" height={36} />
-            <Line
-              type="monotone"
-              dataKey="rental_rate"
-              name="Rental Rate"
-              stroke={SF_COLOR_RENTAL}
-              dot={false}
-              isAnimationActive={false}
-              connectNulls={true}
-              strokeWidth={2}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </ChartContainer>
+      {/* Austin Chart */}
+      {austinData.length > 0 && (
+        <ChartContainer
+          config={{
+            "Ownership Rate (Austin)": { color: AUSTIN_COLOR_OWNERSHIP },
+            "Rental Rate (Austin)": { color: AUSTIN_COLOR_RENTAL },
+          }}
+          className={hasBothCities ? "h-80" : "h-[600px]"}
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={austinData}
+              margin={{ top: 20, right: 30, left: 60, bottom: 50 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
+                angle={-45}
+                textAnchor="end"
+                height={60}
+                interval="preserveStartEnd"
+                minTickGap={30}
+                type="number"
+                domain={dateDomainAustin}
+                scale="time"
+              />
+              <YAxis
+                domain={[0, 1]}
+                label={{
+                  value: "Rate (%)",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: -40,
+                }}
+                width={80}
+                tickFormatter={v => `${Math.round(v * 100)}%`}
+                ticks={[0, 0.25, 0.5, 0.75, 1]}
+              />
+              <Tooltip
+                content={<ChartTooltipContent />}
+                labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
+                formatter={(value, name) => {
+                  if (typeof value === "number") {
+                    return [`${(value * 100).toFixed(1)}%`, name];
+                  }
+                  return [value, name];
+                }}
+              />
+              <Legend verticalAlign="bottom" height={36} />
+              <Line
+                type="monotone"
+                dataKey="ownership_rate"
+                name="Ownership Rate (Austin)"
+                stroke={AUSTIN_COLOR_OWNERSHIP}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls={true}
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="rental_rate"
+                name="Rental Rate (Austin)"
+                stroke={AUSTIN_COLOR_RENTAL}
+                dot={false}
+                isAnimationActive={false}
+                connectNulls={true}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      )}
     </div>
   );
 };

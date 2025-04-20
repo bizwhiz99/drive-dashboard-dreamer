@@ -71,8 +71,8 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
       
       <Card className="mb-16 space-y-4">
         <CardHeader>
-          <CardTitle>Ownership &amp; Rental Rates Over Time (San Francisco)</CardTitle>
-          <CardDescription>Ownership and rental rate trends for San Francisco</CardDescription>
+          <CardTitle>Ownership &amp; Rental Rates Over Time</CardTitle>
+          <CardDescription>Ownership and rental rate trends by city</CardDescription>
         </CardHeader>
         <CardContent className="h-[600px] pb-8">
           <OwnershipRentalRatesChart data={data} />
