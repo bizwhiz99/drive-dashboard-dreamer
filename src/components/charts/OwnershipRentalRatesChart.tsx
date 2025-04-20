@@ -25,22 +25,17 @@ interface OwnershipRentalRatesChartProps {
  * One chart for San Francisco:
  * - Ownership Rate (solid orange line)
  * - Rental Rate (dashed blue line)
- * Y axis: 0-1 (rates divided by 100). 
+ * Y axis: 0-100 (percentage). 
  * X axis: Time (date).
  */
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
-  // Only SF valid data and rates divided by 100
+  // Only SF valid data - NO DIVISION by 100 now
   const chartData = React.useMemo(() => {
     const filtered = filterValidData(
       data.filter(item => item.city === "San Francisco"),
       ["ownership_rate", "rental_rate"]
     );
     return filtered
-      .map(item => ({
-        ...item,
-        ownership_rate: typeof item.ownership_rate === "number" ? item.ownership_rate / 100 : null,
-        rental_rate: typeof item.rental_rate === "number" ? item.rental_rate / 100 : null,
-      }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data]);
 
@@ -86,22 +81,22 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
             scale="time"
           />
           <YAxis
-            domain={[0, 1]}
+            domain={[0, 100]}
             label={{
-              value: "Rate",
+              value: "Rate (%)",
               angle: -90,
               position: "insideLeft",
               offset: -40,
             }}
             width={80}
-            tickFormatter={v => (v * 100).toFixed(0) + "%"}
+            tickFormatter={v => `${v}%`}
           />
           <Tooltip
             content={<ChartTooltipContent />}
             labelFormatter={(label) => safeFormatDate(label, formatDateMonthYear)}
             formatter={(value, name, props) =>
               typeof value === "number"
-                ? `${(value * 100).toFixed(1)}%`
+                ? `${value.toFixed(1)}%`
                 : value
             }
           />
