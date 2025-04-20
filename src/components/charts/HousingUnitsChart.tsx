@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -48,7 +49,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
         </Select>
       </div>
       
-      <div className="flex-1 overflow-visible">
+      <div className="flex-1 overflow-visible pb-8">
         <ChartContainer 
           config={{
             "owned_units": { color: "#8B5CF6", label: "Owned Units" },
@@ -66,7 +67,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 70, // Increased bottom margin to avoid axis label overlap
+                bottom: 85, // Increased bottom margin to ensure x-axis labels are fully visible
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -75,11 +76,12 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
                 angle={-45} 
                 textAnchor="end" 
-                height={60}
+                height={70} // Increased height to give more space for the x-axis
                 interval="preserveStartEnd"
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
+                dy={10} // Added vertical offset to push labels down a bit
               />
               <YAxis 
                 tickFormatter={formatNumberWithK}

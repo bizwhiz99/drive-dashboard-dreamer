@@ -64,7 +64,7 @@ const TimeSeriesTab: React.FC<TimeSeriesTabProps> = ({ data }) => {
           <CardTitle>Housing Units Over Time</CardTitle>
           <CardDescription>Owned vs rental units by city (in thousands)</CardDescription>
         </CardHeader>
-        <CardContent className="h-[600px] pb-16">
+        <CardContent className="h-[650px] pb-20">
           <HousingUnitsChart data={data} />
         </CardContent>
       </Card>
