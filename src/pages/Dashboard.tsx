@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
@@ -92,10 +91,9 @@ const Dashboard = () => {
 
   const handleError = (error: Error) => {
     setIsLoading(false);
-    toast("Error loading data", {
+    toast.error("Error loading data", {
       description: error.message,
       duration: 5000,
-      variant: "destructive",
     });
   };
 
