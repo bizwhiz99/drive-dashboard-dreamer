@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -54,7 +53,7 @@ const MedianRentChart: React.FC<MedianRentChartProps> = ({ data }) => {
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval={3}  // Show ticks every quarter (4 per year)
+            interval={3}  // Consistent tick interval every quarter
             minTickGap={30}
             type="category"
             allowDuplicatedCategory={false}

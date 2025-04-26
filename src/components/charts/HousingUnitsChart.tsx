@@ -77,7 +77,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 angle={-45} 
                 textAnchor="end" 
                 height={90}
-                interval={3}  // Show ticks every quarter (4 per year)
+                interval={3}  // Consistent tick interval every quarter
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
