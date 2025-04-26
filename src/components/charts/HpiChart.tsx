@@ -54,7 +54,7 @@ const HpiChart: React.FC<HpiChartProps> = ({ data }) => {
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval={3}  // Consistent tick interval every quarter
+            interval={4}  // Updated to 4 for consistent tick interval
             minTickGap={30}
             type="category"
             allowDuplicatedCategory={false}

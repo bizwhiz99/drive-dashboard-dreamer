@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -53,7 +54,7 @@ const MedianIncomeChart: React.FC<MedianIncomeChartProps> = ({ data }) => {
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval={3}  // Consistent tick interval every quarter
+            interval={4}  // Updated to 4 for consistent tick interval
             minTickGap={30}
             type="category"
             allowDuplicatedCategory={false}

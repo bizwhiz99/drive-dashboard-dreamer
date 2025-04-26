@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -77,7 +78,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 angle={-45} 
                 textAnchor="end" 
                 height={90}
-                interval={3}  // Consistent tick interval every quarter
+                interval={4}  // Updated to 4 for consistent tick interval
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
