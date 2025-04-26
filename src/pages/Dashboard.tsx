@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +15,7 @@ const Dashboard = () => {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('all');
-  const [csvUrl, setCsvUrl] = useState<string>('https://docs.google.com/spreadsheets/d/1ewPYAHgZJc6jV_i8D1634_klao-D78UqK59AlNVylKk/edit?usp=sharing');
+  const [csvUrl, setCsvUrl] = useState<string>('https://docs.google.com/spreadsheets/d/1E9sMY3AVgmts4YhFEX6AKyS-diuj5Dq_qFBVtGqvKpE/edit?usp=sharing');
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
   const availableCities = React.useMemo(() => {

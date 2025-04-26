@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -68,7 +67,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 top: 20,
                 right: 30,
                 left: 60,
-                bottom: 120, // Further increased bottom margin for published environment
+                bottom: 120,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -77,13 +76,13 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
                 angle={-45} 
                 textAnchor="end" 
-                height={90} // Further increased height for x-axis
-                interval="preserveStartEnd"
+                height={90}
+                interval={3}  // Show ticks every quarter (4 per year)
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
-                dy={20} // Further increased vertical offset to ensure labels are visible
-                tick={{ fontSize: 12 }} // Explicitly set font size for better consistency
+                dy={20}
+                tick={{ fontSize: 12 }}
               />
               <YAxis 
                 tickFormatter={formatNumberWithK}

@@ -54,7 +54,7 @@ const MedianRentChart: React.FC<MedianRentChartProps> = ({ data }) => {
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval="preserveStartEnd"
+            interval={3}  // Show ticks every quarter (4 per year)
             minTickGap={30}
             type="category"
             allowDuplicatedCategory={false}
