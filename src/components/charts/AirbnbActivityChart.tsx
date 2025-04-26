@@ -26,9 +26,56 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
     "Austin": "#F97316", // Bright orange
   };
 
+  // Define custom tick formatter to only show December of each year
+  const customTickFormatter = (tickItem: any) => {
+    if (tickItem instanceof Date) {
+      // Only show December months (11 because months are 0-indexed)
+      if (tickItem.getMonth() === 11) {
+        return `Dec ${tickItem.getFullYear()}`;
+      }
+      return '';
+    }
+    return '';
+  };
+
+  // Define custom tick values (December of each year)
+  const getDecemberTicks = React.useCallback(() => {
+    if (!validData || validData.length === 0) return [];
+    
+    // Get all unique years
+    const years = Array.from(
+      new Set(
+        validData.map(item => 
+          item.date instanceof Date ? item.date.getFullYear() : null
+        ).filter(Boolean)
+      )
+    );
+    
+    // For each year, find a data point from December or closest to it
+    return years.map(year => {
+      // Find all dates in this year
+      const datesInYear = validData
+        .filter(item => item.date instanceof Date && item.date.getFullYear() === year)
+        .map(item => item.date);
+        
+      // Try to find December
+      const decDate = datesInYear.find(date => date.getMonth() === 11);
+      if (decDate) return decDate;
+      
+      // If no December, return the last date in that year
+      if (datesInYear.length > 0) {
+        return datesInYear.sort((a, b) => b.getTime() - a.getTime())[0];
+      }
+      
+      return null;
+    }).filter(Boolean);
+  }, [validData]);
+
   if (validData.length === 0) {
     return <div className="flex items-center justify-center h-full text-muted-foreground">No data available</div>;
   }
+
+  const decemberTicks = getDecemberTicks();
 
   return (
     <ChartContainer 
@@ -50,12 +97,11 @@ const AirbnbActivityChart: React.FC<AirbnbActivityChartProps> = ({ data }) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="date" 
-            tickFormatter={(value) => safeFormatDate(value, formatDateMonthYear)}
+            tickFormatter={customTickFormatter}
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval="preserveStartEnd"
-            minTickGap={30}
+            ticks={decemberTicks}
             type="category"
             allowDuplicatedCategory={false}
           />
