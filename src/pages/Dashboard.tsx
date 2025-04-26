@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('all');
-  const [csvUrl, setCsvUrl] = useState<string>('https://docs.google.com/spreadsheets/d/1c8Ez2qlqIeMKcP5Wc_rBrXhPRrTrDjMjw-L10BM6qqI/edit?usp=sharing');
+  const [csvUrl, setCsvUrl] = useState<string>('https://docs.google.com/spreadsheets/d/1AqsvSXs7_l5c3lZed_UNfugrnqUhL-0jCogiVBAkwsY/edit?usp=sharing');
   const [isUrlLoading, setIsUrlLoading] = useState(false);
 
   const availableCities = React.useMemo(() => {
