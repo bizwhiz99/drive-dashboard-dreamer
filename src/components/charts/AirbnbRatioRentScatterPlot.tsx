@@ -12,7 +12,11 @@ interface AirbnbRatioRentScatterPlotProps {
 const AirbnbRatioRentScatterPlot: React.FC<AirbnbRatioRentScatterPlotProps> = ({ data }) => {
   // Filter data to ensure all records have valid airbnb_ratio and median_rent values
   const validData = React.useMemo(() => {
-    return filterValidData(data, ['airbnb_ratio', 'median_rent']);
+    console.log("Rent scatter plot data length:", data.length);
+    const filtered = filterValidData(data, ['airbnb_ratio', 'median_rent']);
+    console.log("Valid rent scatter plot data length:", filtered.length);
+    console.log("Sample rent data point:", filtered.length > 0 ? filtered[0] : "No data");
+    return filtered;
   }, [data]);
 
   // Get unique cities for the chart
@@ -33,7 +37,7 @@ const AirbnbRatioRentScatterPlot: React.FC<AirbnbRatioRentScatterPlotProps> = ({
         <div className="bg-background border border-border rounded p-3 shadow-md">
           <div className="font-medium">{data.city}</div>
           <div>{safeFormatDate(data.date, formatDateMonthYear)}</div>
-          <div>Airbnb Ratio: {data.airbnb_ratio.toFixed(4)}</div>
+          <div>Airbnb Ratio: {(data.airbnb_ratio * 100).toFixed(2)}%</div>
           <div>Median Rent: ${data.median_rent.toFixed(2)}</div>
         </div>
       );
@@ -68,6 +72,8 @@ const AirbnbRatioRentScatterPlot: React.FC<AirbnbRatioRentScatterPlotProps> = ({
             dataKey="airbnb_ratio" 
             name="Airbnb Ratio" 
             label={{ value: 'Airbnb Ratio (% of total housing)', position: 'bottom', offset: 10 }}
+            // Convert to percentage for better readability
+            tickFormatter={(value) => `${(value * 100).toFixed(2)}%`}
           />
           <YAxis 
             type="number" 

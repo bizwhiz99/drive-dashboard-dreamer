@@ -9,6 +9,8 @@ interface ScatterPlotsTabProps {
 }
 
 const ScatterPlotsTab: React.FC<ScatterPlotsTabProps> = ({ data }) => {
+  console.log("ScatterPlotsTab received data length:", data.length);
+  
   return (
     <div className="space-y-6">
       <Card>
