@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
@@ -10,29 +9,58 @@ interface HousingPriceIndexChartProps {
 const HousingPriceIndexChart: React.FC<HousingPriceIndexChartProps> = ({ data }) => {
   // Process data for the chart
   const chartData = React.useMemo(() => {
-    // Group by year and quarter to create time labels
-    const groupedData = data.reduce((acc: Record<string, any>, item) => {
-      const timeKey = `${item.year}-Q${item.quarter}`;
-      if (!acc[timeKey]) {
-        acc[timeKey] = {
-          time: timeKey,
-          year: item.year,
-          quarter: item.quarter
-        };
+    // Filter to only include December data points or the latest available month for each year
+    const yearMap: Record<number, Record<string, any>> = {};
+    
+    data.forEach(item => {
+      if (!item.year || !item.quarter || !item.hpi || !item.city) return;
+      
+      const year = item.year;
+      const quarter = item.quarter;
+      const timeKey = `${year}-Q${quarter}`;
+      
+      // Initialize year entry if it doesn't exist
+      if (!yearMap[year]) {
+        yearMap[year] = {};
       }
       
-      // Track housing price index by city
-      acc[timeKey][`${item.city}_hpi`] = item.hpi;
-      
-      return acc;
-    }, {});
+      // For each year, keep the Q4 (or highest available quarter) for each city
+      if (!yearMap[year][item.city] || quarter > yearMap[year][item.city].quarter) {
+        yearMap[year][item.city] = {
+          timeKey,
+          year,
+          quarter,
+          city: item.city,
+          hpi: item.hpi
+        };
+      }
+    });
     
-    // Convert to array and sort chronologically
-    return Object.values(groupedData)
-      .sort((a: any, b: any) => {
-        if (a.year !== b.year) return a.year - b.year;
-        return a.quarter - b.quarter;
+    // Convert the nested map to a flat array of data points
+    const flattenedData: Record<string, any>[] = [];
+    
+    Object.values(yearMap).forEach(cityEntries => {
+      const yearData: Record<string, any> = {};
+      
+      Object.values(cityEntries).forEach(entry => {
+        if (!yearData.time) {
+          yearData.time = entry.timeKey;
+          yearData.year = entry.year;
+          yearData.quarter = entry.quarter;
+        }
+        
+        // Add city-specific HPI
+        yearData[`${entry.city}_hpi`] = entry.hpi;
       });
+      
+      flattenedData.push(yearData);
+    });
+    
+    // Sort chronologically
+    return flattenedData.sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      return a.quarter - b.quarter;
+    });
   }, [data]);
 
   const cities = React.useMemo(() => {
@@ -72,7 +100,7 @@ const HousingPriceIndexChart: React.FC<HousingPriceIndexChartProps> = ({ data })
             angle={-45} 
             textAnchor="end" 
             height={60}
-            interval={Math.floor(chartData.length / 10)} // Show fewer labels for readability
+            minTickGap={30} 
           />
           <YAxis 
             label={{ value: 'Housing Price Index', angle: -90, position: 'insideLeft' }}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
@@ -23,6 +22,30 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
     
     return filtered;
   }, [data, selectedCity]);
+
+  // Filter data to show only December months
+  const decemberData = React.useMemo(() => {
+    // Group by city and year to get December months
+    const cityYearMap: Record<string, Record<number, any>> = {};
+    
+    validData.forEach(item => {
+      const year = item.date.getFullYear();
+      const month = item.date.getMonth();
+      const cityKey = item.city;
+      
+      if (!cityYearMap[cityKey]) {
+        cityYearMap[cityKey] = {};
+      }
+      
+      // Only keep December (month 11) or the latest month for each year
+      if (!cityYearMap[cityKey][year] || month === 11 || month > cityYearMap[cityKey][year].date.getMonth()) {
+        cityYearMap[cityKey][year] = item;
+      }
+    });
+    
+    // Flatten the map to an array
+    return Object.values(cityYearMap).flatMap(yearMap => Object.values(yearMap));
+  }, [validData]);
 
   // Get unique cities for the chart
   const cities = React.useMemo(() => {
@@ -78,7 +101,6 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                 angle={-45} 
                 textAnchor="end" 
                 height={90}
-                interval={4}  // Updated to 4 for consistent tick interval
                 minTickGap={30}
                 type="category"
                 allowDuplicatedCategory={false}
@@ -113,7 +135,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                         type="monotone"
                         dataKey="owned_units"
                         name={`Owned Units (${city})`}
-                        data={validData.filter(item => item.city === city)}
+                        data={decemberData.filter(item => item.city === city)}
                         stroke={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
                         fill={city === 'Austin' ? "#8B5CF6" : "#0EA5E9"}
                         fillOpacity={0.5}
@@ -124,7 +146,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                         type="monotone"
                         dataKey="rental_units"
                         name={`Rental Units (${city})`}
-                        data={validData.filter(item => item.city === city)}
+                        data={decemberData.filter(item => item.city === city)}
                         stroke={city === 'Austin' ? "#F97316" : "#10B981"}
                         fill={city === 'Austin' ? "#F97316" : "#10B981"}
                         fillOpacity={0.5}
@@ -141,7 +163,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                     type="monotone"
                     dataKey="owned_units"
                     name="Owned Units"
-                    data={validData}
+                    data={decemberData}
                     stroke="#8B5CF6"
                     fill="#8B5CF6"
                     fillOpacity={0.5}
@@ -152,7 +174,7 @@ const HousingUnitsChart: React.FC<HousingUnitsChartProps> = ({ data }) => {
                     type="monotone"
                     dataKey="rental_units"
                     name="Rental Units"
-                    data={validData}
+                    data={decemberData}
                     stroke="#F97316"
                     fill="#F97316"
                     fillOpacity={0.5}

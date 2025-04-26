@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   LineChart,
@@ -32,19 +31,42 @@ interface OwnershipRentalRatesChartProps {
  * X axis: Time (date)
  */
 const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ data }) => {
+  // Filter data to show only December months for each year
+  const filterDecemberData = (cityData: any[]) => {
+    // Group by year to get December months
+    const yearMap: Record<number, any> = {};
+    
+    cityData.forEach(item => {
+      const year = item.date.getFullYear();
+      const month = item.date.getMonth();
+      
+      // Only keep December (month 11) or the latest month for each year
+      if (!yearMap[year] || month === 11 || month > yearMap[year].date.getMonth()) {
+        yearMap[year] = item;
+      }
+    });
+    
+    // Return the values sorted by date
+    return Object.values(yearMap).sort((a, b) => a.date.getTime() - b.date.getTime());
+  };
+
   // Prepare chart data - filter for valid data for both cities
   const sfData = React.useMemo(() => {
-    return filterValidData(
+    const filteredData = filterValidData(
       data.filter(item => item.city === "San Francisco"),
       ["ownership_rate", "rental_rate"]
     ).sort((a, b) => a.date.getTime() - b.date.getTime());
+    
+    return filterDecemberData(filteredData);
   }, [data]);
 
   const austinData = React.useMemo(() => {
-    return filterValidData(
+    const filteredData = filterValidData(
       data.filter(item => item.city === "Austin"),
       ["ownership_rate", "rental_rate"]
     ).sort((a, b) => a.date.getTime() - b.date.getTime());
+    
+    return filterDecemberData(filteredData);
   }, [data]);
 
   // Calculate date domains for x-axis
@@ -87,7 +109,6 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
                 angle={-45}
                 textAnchor="end"
                 height={60}
-                interval="preserveStartEnd"
                 minTickGap={30}
                 type="number"
                 domain={dateDomainSF}
@@ -162,7 +183,6 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
                 angle={-45}
                 textAnchor="end"
                 height={60}
-                interval="preserveStartEnd"
                 minTickGap={30}
                 type="number"
                 domain={dateDomainAustin}
@@ -220,4 +240,3 @@ const OwnershipRentalRatesChart: React.FC<OwnershipRentalRatesChartProps> = ({ d
 };
 
 export default OwnershipRentalRatesChart;
-
